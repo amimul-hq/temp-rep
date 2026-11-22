@@ -138,9 +138,9 @@ cp .env.example .env
 *(On Windows PowerShell: `Copy-Item .env.example .env`)*
 
 Open `.env` and verify the default values:
-- `ADMIN_USERNAME=admin`
-- `ADMIN_PASSWORD=Admin@HairCare2026`
-- `JWT_SECRET=super_secret_haircare_jwt_key_min_32_characters_long_2026`
+- `ADMIN_USERNAME`: Your chosen administrator login name.
+- `ADMIN_PASSWORD`: A unique administrator password.
+- `JWT_SECRET`: A unique signing secret generated with `openssl rand -hex 32`.
 - `PORT=5000`
 
 > **Note:** The application includes a resilient fallback store, which means it will run immediately and allow you to test browsing, shopping cart, checkout, and admin panel even before you create a MongoDB Atlas cluster!
@@ -208,8 +208,8 @@ Deploying to Netlify Free takes less than 3 minutes:
 6. Click **Environment variables** &rarr; **Add a variable** and configure:
    - `MONGODB_URI`: Your MongoDB Atlas connection string.
    - `JWT_SECRET`: A secure 32+ character random secret string.
-   - `ADMIN_USERNAME`: Your desired admin username (default: `admin`).
-   - `ADMIN_PASSWORD`: Your desired admin password (default: `Admin@HairCare2026`).
+   - `ADMIN_USERNAME`: Your desired admin username.
+   - `ADMIN_PASSWORD`: Your desired admin password.
    - `META_PIXEL_ID`: *(Optional)* Your Facebook Meta Pixel ID.
    - `META_CAPI_ACCESS_TOKEN`: *(Optional)* Your Meta Conversions API Access Token.
    - `META_TEST_EVENT_CODE`: *(Optional)* For test event debugging.
@@ -255,11 +255,7 @@ Access the admin portal at:
 https://your-domain.com/admin/login
 ```
 
-**Default Credentials:**
-- **Username**: `admin`
-- **Password**: `Admin@HairCare2026`
-
-*(You can customize these in `.env` or Netlify Environment Variables)*
+Sign in with the `ADMIN_USERNAME` and `ADMIN_PASSWORD` configured in your environment. No password or signing secret is supplied by the application.
 
 ### What You Can Do in the Admin Panel:
 1. **Dashboard**: View total revenue, order counts (Pending, Confirmed, Shipped, Delivered, Cancelled), and top-selling products.

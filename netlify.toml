@@ -5,6 +5,14 @@
 
 [build.environment]
   NODE_ENV = "development"
+  # These settings are public identifiers or runtime modes, not passwords or tokens.
+  # Keep credential scanning enabled for every other environment variable.
+  SECRETS_SCAN_OMIT_KEYS = "NODE_ENV,ADMIN_USERNAME,META_PIXEL_ID,VITE_META_PIXEL_ID"
+
+[dev]
+  command = "npm run dev"
+  targetPort = 3000
+  port = 8889
 
 [functions]
   node_bundler = "esbuild"

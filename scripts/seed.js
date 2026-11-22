@@ -26,8 +26,12 @@ async function seedLocalData() {
   console.log(` - Orders: ${data.orders?.length || 0}`);
 
   // 2. Ensure Admin account exists in local store
-  const username = process.env.ADMIN_USERNAME || 'admin';
-  const password = process.env.ADMIN_PASSWORD || 'Admin@HairCare2026';
+  const username = process.env.ADMIN_USERNAME;
+  const password = process.env.ADMIN_PASSWORD;
+
+  if (!username || !password) {
+    throw new Error('Set ADMIN_USERNAME and ADMIN_PASSWORD before seeding.');
+  }
 
   let admins = data.admins || [];
   let existingAdmin = admins.find(a => a.username === username);
@@ -47,9 +51,9 @@ async function seedLocalData() {
     admins.push(newAdmin);
     data.admins = admins;
     localJsonStore.saveToDisk();
-    console.log(`✅ Admin account "${username}" created in local JSON.`);
+    console.log('✅ Admin account created in local JSON.');
   } else {
-    console.log(`ℹ️  Admin account "${username}" already verified in local JSON.`);
+    console.log('ℹ️  Admin account already verified in local JSON.');
   }
 
   console.log('\n🎉 Local JSON verification & seeding complete!');

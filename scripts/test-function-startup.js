@@ -28,6 +28,7 @@ for (const commonJS of [true, false]) {
 process.env.ADMIN_USERNAME = randomUUID();
 process.env.ADMIN_PASSWORD = randomUUID();
 process.env.JWT_SECRET = randomUUID();
+delete process.env.MONGODB_URI;
 const { handler } = await import('../netlify/functions/api.js');
 for (const requestPath of ['/api/admin/login', '/.netlify/functions/api/admin/login']) {
   const response = await handler({
@@ -56,4 +57,18 @@ const rejected = await handler({ ...event, body: JSON.stringify({
   username: process.env.ADMIN_USERNAME, password: randomUUID()
 }) }, {});
 assert.equal(rejected.statusCode, 401);
-console.log('Function directory resolution, login, session, and invalid password checks passed.');
+
+// Missing configuration must never fall back to a shared signing secret.
+delete process.env.JWT_SECRET;
+const { default: unconfiguredApp } = await import('../netlify/functions/app.js?missing-secret');
+const { default: serverless } = await import('serverless-http');
+const unconfiguredHandler = serverless(unconfiguredApp);
+const unavailable = await unconfiguredHandler(event, {});
+assert.equal(unavailable.statusCode, 503);
+assert.equal(JSON.parse(unavailable.body).success, false);
+const storefront = await unconfiguredHandler({
+  ...event, httpMethod: 'GET', path: '/api/website-data', body: null, headers: {}
+}, {});
+assert.equal(storefront.statusCode, 200);
+assert.ok(JSON.parse(storefront.body).data.products.length);
+console.log('Function startup, login, session, invalid password, missing-secret, and public storefront checks passed.');
