@@ -50,7 +50,7 @@ app.use((req, res, next) => {
   next();
 });
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_haircare_jwt_key_min_32_characters_long_2026';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Helper: Sanitize public website data - ensure sensitive server credentials/tokens are never exposed
 function sanitizePublicWebsiteData(doc) {
@@ -493,11 +493,15 @@ app.post('/api/admin/login', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Username and password required' });
     }
 
+    if (!JWT_SECRET) {
+      return res.status(503).json({ success: false, message: 'Admin authentication is not configured.' });
+    }
+
     const cleanUser = String(username).trim().toLowerCase();
     const cleanPass = String(password).trim();
 
-    const envUser = (process.env.ADMIN_USERNAME || 'admin').trim().toLowerCase();
-    const envPass = (process.env.ADMIN_PASSWORD || 'Admin@HairCare2026').trim();
+    const envUser = (process.env.ADMIN_USERNAME || '').trim().toLowerCase();
+    const envPass = (process.env.ADMIN_PASSWORD || '').trim();
 
     const adminRecord = await localJsonStore.getAdminByUsername(cleanUser);
     let isMatch = false;
@@ -511,7 +515,7 @@ app.post('/api/admin/login', async (req, res) => {
     }
 
     // Direct fallback: If DB hash failed or doesn't match, verify against ENV credentials
-    if (!isMatch && cleanUser === envUser && cleanPass === envPass) {
+    if (!isMatch && envUser && envPass && cleanUser === envUser && cleanPass === envPass) {
       isMatch = true;
     }
 
